@@ -1,0 +1,71 @@
+{
+  "name": "devtool-x",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AI 开发者效率工具箱 DevTool X",
+  "main": "main.js",
+  "author": "DevTool X Team",
+  "license": "UNLICENSED",
+  "keywords": [
+    "electron",
+    "ai",
+    "developer-tools",
+    "desktop"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win nsis",
+    "build:mac": "electron-builder --mac dmg",
+    "build:linux": "electron-builder --linux AppImage deb"
+  },
+  "dependencies": {
+    "axios": "^1.7.2"
+  },
+  "devDependencies": {
+    "electron": "^41.1.1",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.devtool.x",
+    "productName": "DevTool X",
+    "asar": true,
+    "publish": null,
+    "files": [
+      "api/**/*",
+      "configStore.js",
+      "index.html",
+      "main.js",
+      "package.json",
+      "preload.js",
+      "renderer.js",
+      "style.css"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "artifactName": "${productName} Setup ${version}.${ext}"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.developer-tools",
+      "artifactName": "${productName}-${version}-mac-${arch}.${ext}"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development",
+      "artifactName": "${productName}-${version}-linux-${arch}.${ext}"
+    }
+  }
+}

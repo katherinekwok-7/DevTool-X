@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevTool X</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero card">
+      <div>
+        <p class="eyebrow">AI 开发效率面板</p>
+        <h1>DevTool X</h1>
+        <p class="hero-copy">一个桌面工作台，统一处理任意语言代码生成、跨平台环境脚本、报错排查和技术文档输出。</p>
+      </div>
+      <div class="hero-actions">
+        <button id="openSettingsBtn" class="secondary-button" type="button">连接设置</button>
+      </div>
+    </header>
+
+    <div id="statusBar" class="status-bar" data-tone="info" aria-live="polite">正在加载本地设置...</div>
+
+    <section id="settingsPanel" class="card settings-panel hidden">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Connection</p>
+          <h2>模型连接设置</h2>
+        </div>
+        <button id="closeSettingsBtn" class="ghost-button" type="button">收起</button>
+      </div>
+
+      <div class="settings-grid">
+        <label class="field">
+          <span>当前提供商</span>
+          <select id="providerSelect">
+            <option value="doubao">豆包</option>
+            <option value="claude">Claude</option>
+            <option value="codex">Codex / OpenAI</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>豆包模型</span>
+          <input id="doubaoModel" type="text" placeholder="doubao-pro">
+        </label>
+
+        <label class="field">
+          <span>豆包 API Key</span>
+          <input id="doubaoKey" type="password" placeholder="手动填写时优先使用">
+        </label>
+
+        <label class="field">
+          <span>豆包 Base URL</span>
+          <input id="doubaoBaseUrl" type="text" placeholder="可留空，默认使用方舟接口">
+        </label>
+
+        <label class="field">
+          <span>Claude 模型</span>
+          <input id="claudeModel" type="text" placeholder="claude-sonnet-4-20250514">
+        </label>
+
+        <label class="field">
+          <span>Claude API Key</span>
+          <input id="claudeKey" type="password" placeholder="也支持 ai-forge / ANTHROPIC_* 自动检测">
+        </label>
+
+        <label class="field">
+          <span>Claude Base URL</span>
+          <input id="claudeBaseUrl" type="text" placeholder="可留空，默认使用 Anthropic 官方接口">
+        </label>
+
+        <label class="field">
+          <span>Codex / OpenAI 模型</span>
+          <input id="codexModel" type="text" placeholder="gpt-5-codex">
+        </label>
+
+        <label class="field">
+          <span>Codex / OpenAI API Key</span>
+          <input id="codexKey" type="password" placeholder="也支持 ai-forge login -p codex 自动检测">
+        </label>
+
+        <label class="field">
+          <span>Codex / OpenAI Base URL</span>
+          <input id="codexBaseUrl" type="text" placeholder="可留空，默认使用官方 Responses API 或 ai-forge 配置">
+        </label>
+      </div>
+
+      <p id="settingsSummary" class="settings-summary"></p>
+      <p id="providerHint" class="settings-hint"></p>
+      <p id="settingsPathText" class="settings-path"></p>
+
+      <div class="card subpanel">
+        <div class="section-head compact-head">
+          <div>
+            <p class="eyebrow">Detected Auth</p>
+            <h3>自动检测状态</h3>
+          </div>
+          <button id="refreshAuthBtn" class="ghost-button" type="button">刷新登录态</button>
+        </div>
+        <pre id="authStatusText" class="output compact-output"></pre>
+      </div>
+
+      <div class="panel-actions">
+        <button id="revealSettingsBtn" class="ghost-button" type="button">定位设置文件</button>
+        <button id="saveSettingsBtn" type="button">保存设置</button>
+      </div>
+    </section>
+
+    <main class="workspace-grid">
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Generate</p>
+            <h2>AI 代码生成</h2>
+          </div>
+          <span class="tag">任意语言 / C++ / Rust / Java / Python / Go / TS</span>
+        </div>
+        <textarea id="codeInput" placeholder="例如：用 C++17 实现一个跨平台文件监听器，支持递归监控目录变化，Linux 用 inotify，Windows 用 ReadDirectoryChangesW，输出统一接口和最小可运行示例。"></textarea>
+        <div class="panel-actions">
+          <button id="genCodeBtn" type="button">生成代码</button>
+        </div>
+        <pre id="codeOutput" class="output"></pre>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Setup</p>
+            <h2>环境脚本生成</h2>
+          </div>
+          <span class="tag">自由描述 / 跨平台 / 版本敏感</span>
+        </div>
+        <textarea id="envInput" placeholder="例如：为 Ubuntu 22.04 服务器生成 C++17 + CMake + Ninja + vcpkg 开发环境脚本，shell 为 bash；或者：为 Windows 11 + PowerShell 7 生成 Node 20 + pnpm + Git + VS Build Tools 初始化脚本。"></textarea>
+        <div class="panel-actions">
+          <button id="genEnvBtn" type="button">生成脚本</button>
+        </div>
+        <pre id="envOutput" class="output"></pre>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Diagnose</p>
+            <h2>报错日志排查</h2>
+          </div>
+          <span class="tag">日志分析 / 根因定位</span>
+        </div>
+        <textarea id="errorInput" placeholder="粘贴报错日志、编译输出或运行时栈信息"></textarea>
+        <div class="panel-actions">
+          <button id="diagnoseBtn" type="button">排查问题</button>
+        </div>
+        <pre id="errorOutput" class="output"></pre>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Document</p>
+            <h2>文档 / 周报 / README</h2>
+          </div>
+          <span class="tag">结构化输出</span>
+        </div>
+        <textarea id="docInput" placeholder="输入项目背景、功能点、约束和目标读者，例如：为一个 Electron + OpenAI 项目生成 README，包含安装、配置、打包和 GitHub Actions 说明。"></textarea>
+        <div class="panel-actions">
+          <button id="genDocBtn" type="button">生成文档</button>
+        </div>
+        <pre id="docOutput" class="output"></pre>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span id="appMetaText">DevTool X</span>
+      <span>支持手动 Key，也支持自动读取 ai-forge / shell profile / .codex 配置中的部分登录态。</span>
+    </footer>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>

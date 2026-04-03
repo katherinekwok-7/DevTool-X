@@ -1,0 +1,88 @@
+﻿name: Build Desktop Packages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: devtool-x-windows
+            build_command: npm run build:win
+          - os: macos-latest
+            artifact_name: devtool-x-macos
+            build_command: npm run build:mac
+          - os: ubuntu-latest
+            artifact_name: devtool-x-linux
+            build_command: npm run build:linux
+
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: false
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Linux packaging dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fakeroot rpm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build desktop package
+        run: ${{ matrix.build_command }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: dist/**
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release Assets
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+          merge-multiple: true
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-artifacts/**/*.exe
+            release-artifacts/**/*.blockmap
+            release-artifacts/**/*.dmg
+            release-artifacts/**/*.AppImage
+            release-artifacts/**/*.deb
+            release-artifacts/**/*.zip
