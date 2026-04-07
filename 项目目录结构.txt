@@ -1,9 +1,0 @@
-DevTool X/
-├── package.json           // 项目配置
-├── main.js                // Electron主进程
-├── preload.js             // 安全桥接
-├── index.html             // 主界面
-├── style.css              // 样式
-├── renderer.js            // 前端交互
-└── api/
-    └── aiClient.js        // 多模型AI客户端（豆包+Claude+Codex）
