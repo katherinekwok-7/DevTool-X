@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "AI 开发者效率工具箱 DevTool X",
   "main": "main.js",
-  "author": "DevTool X Team",
+  "author": "DevTool X Team <katherinekwok-7@users.noreply.github.com>",
   "license": "UNLICENSED",
   "keywords": [
     "electron",
@@ -65,6 +65,7 @@
         "deb"
       ],
       "category": "Development",
+      "maintainer": "DevTool X Team <katherinekwok-7@users.noreply.github.com>",
       "artifactName": "${productName}-${version}-linux-${arch}.${ext}"
     }
   }
